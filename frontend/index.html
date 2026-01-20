@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Startup Scout - Find Your Dream Startup Job</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -16,274 +13,241 @@
         }
 
         :root {
-            /* Brutalist color scheme - high contrast, bold */
             --bg-primary: #0a0a0a;
-            --bg-secondary: #1a1a1a;
-            --bg-tertiary: #2a2a2a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
             --accent-green: #00ff41;
-            --accent-yellow: #ffff00;
-            --accent-red: #ff0040;
+            --accent-green-dim: #00cc33;
             --text-primary: #ffffff;
-            --text-secondary: #999999;
-            --border: #333333;
+            --text-secondary: #888888;
+            --text-muted: #555555;
+            --border-color: #333333;
+            --danger: #ff4444;
+            --warning: #ffaa00;
+            --success: #00ff41;
         }
 
         body {
-            font-family: 'Work Sans', sans-serif;
-            background: var(--bg-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
-        }
-
-        .app-container {
             min-height: 100vh;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            line-height: 1.5;
         }
 
+        /* Header */
         .header {
-            background: var(--bg-secondary);
-            border-bottom: 2px solid var(--accent-green);
-            padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
         }
 
         .logo {
             font-family: 'Space Mono', monospace;
-            font-size: 1.5rem;
+            font-size: 24px;
             font-weight: 700;
             color: var(--accent-green);
-            letter-spacing: -1px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .user-info {
-            font-size: 0.9rem;
+        .logo span {
+            color: var(--text-primary);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .stat-label {
             color: var(--text-secondary);
         }
 
-        .tabs-container {
+        /* Navigation Tabs */
+        .nav-tabs {
             display: flex;
             gap: 0;
+            padding: 0 40px;
             background: var(--bg-secondary);
-            border-bottom: 2px solid var(--border);
-            padding: 0 2rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .tab {
+        .nav-tab {
+            padding: 16px 32px;
             font-family: 'Space Mono', monospace;
-            padding: 1rem 2rem;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 14px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
             position: relative;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .tab:hover {
+        .nav-tab:hover {
             color: var(--text-primary);
             background: var(--bg-tertiary);
         }
 
-        .tab.active {
+        .nav-tab.active {
             color: var(--accent-green);
             background: var(--bg-primary);
         }
 
-        .tab.active::after {
+        .nav-tab.active::after {
             content: '';
             position: absolute;
-            bottom: 0;
+            bottom: -1px;
             left: 0;
             right: 0;
             height: 2px;
             background: var(--accent-green);
         }
 
-        .notification-badge {
-            display: inline-block;
-            background: var(--accent-red);
-            color: var(--bg-primary);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 0.7rem;
+        .tab-badge {
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
             font-weight: 700;
-            line-height: 20px;
-            text-align: center;
-            margin-left: 0.5rem;
-            animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        /* Main Content */
+        .main-content {
+            padding: 30px 40px;
+            min-height: calc(100vh - 140px);
         }
 
-        .content {
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
+        .tab-content {
+            display: none;
         }
 
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+        .tab-content.active {
+            display: block;
         }
 
-        .stat-card {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            border-color: var(--accent-green);
-            transform: translateY(-2px);
-        }
-
-        .stat-number {
-            font-family: 'Space Mono', monospace;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent-green);
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 0.5rem;
-        }
-
-        .jobs-table {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            overflow: hidden;
-        }
-
-        .table-header {
-            display: grid;
-            grid-template-columns: 60px 1fr 2fr 120px 100px 100px 100px;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--bg-tertiary);
-            border-bottom: 2px solid var(--border);
-            font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-secondary);
-        }
-
-        .table-row {
-            display: grid;
-            grid-template-columns: 60px 1fr 2fr 120px 100px 100px 100px;
-            gap: 1rem;
-            padding: 1.25rem 1rem;
-            border-bottom: 1px solid var(--border);
-            transition: all 0.2s ease;
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 24px;
         }
 
-        .table-row:hover {
-            background: var(--bg-tertiary);
-        }
-
-        .match-score {
+        .section-title {
             font-family: 'Space Mono', monospace;
-            font-size: 1.5rem;
+            font-size: 20px;
             font-weight: 700;
-            color: var(--accent-green);
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .company-name {
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent-green);
+            transform: translateX(4px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
-            font-size: 1rem;
         }
 
-        .company-stage {
-            font-size: 0.75rem;
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--accent-green);
+            margin-top: 4px;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
             color: var(--text-secondary);
-            margin-top: 0.25rem;
+            margin-top: 12px;
         }
 
-        .job-title {
-            font-weight: 500;
-            color: var(--text-primary);
+        .card-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
-        .job-meta {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
+        .badge-new {
+            background: var(--accent-green);
+            color: var(--bg-primary);
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
+        .badge-early {
+            background: var(--warning);
+            color: var(--bg-primary);
+        }
+
+        .badge-funding {
+            background: #9945FF;
+            color: white;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
             font-family: 'Space Mono', monospace;
-            font-size: 0.7rem;
+            font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
             border: 2px solid;
-        }
-
-        .status-new {
-            color: var(--accent-red);
-            border-color: var(--accent-red);
-            background: rgba(255, 0, 64, 0.1);
-        }
-
-        .status-fresh {
-            color: var(--accent-yellow);
-            border-color: var(--accent-yellow);
-            background: rgba(255, 255, 0, 0.1);
-        }
-
-        .status-saved {
-            color: var(--accent-green);
-            border-color: var(--accent-green);
-            background: rgba(0, 255, 65, 0.1);
-        }
-
-        .btn {
-            font-family: 'Space Mono', monospace;
-            padding: 0.5rem 1rem;
-            border: 2px solid var(--accent-green);
-            background: transparent;
-            color: var(--accent-green);
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .btn:hover {
-            background: var(--accent-green);
-            color: var(--bg-primary);
-        }
-
         .btn-primary {
             background: var(--accent-green);
+            border-color: var(--accent-green);
             color: var(--bg-primary);
         }
 
@@ -292,337 +256,643 @@
             color: var(--accent-green);
         }
 
-        .funding-card {
-            background: var(--bg-secondary);
-            border: 2px solid var(--accent-yellow);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            position: relative;
-            overflow: hidden;
+        .btn-secondary {
+            background: transparent;
+            border-color: var(--border-color);
+            color: var(--text-primary);
         }
 
-        .funding-card::before {
-            content: '💰';
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 2rem;
-            opacity: 0.3;
+        .btn-secondary:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
         }
 
-        .funding-amount {
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 11px;
+        }
+
+        /* Jobs Table */
+        .jobs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .jobs-table th {
+            text-align: left;
+            padding: 12px 16px;
             font-family: 'Space Mono', monospace;
-            font-size: 2rem;
+            font-size: 12px;
             font-weight: 700;
-            color: var(--accent-yellow);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
         }
 
+        .jobs-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .jobs-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .jobs-table tr:hover td {
+            border-color: var(--accent-green);
+        }
+
+        .company-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            color: var(--accent-green);
+            font-size: 16px;
+        }
+
+        .company-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .company-info span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .match-score {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .match-high { color: var(--success); }
+        .match-medium { color: var(--warning); }
+        .match-low { color: var(--text-secondary); }
+
+        .applicants {
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+        }
+
+        .applicants-low { color: var(--success); }
+        .applicants-medium { color: var(--warning); }
+        .applicants-high { color: var(--danger); }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Kanban Board */
         .kanban-board {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
         }
 
         .kanban-column {
             background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 400px;
         }
 
         .kanban-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .kanban-title {
             font-family: 'Space Mono', monospace;
-            font-size: 0.85rem;
+            font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding: 0.75rem;
+        }
+
+        .kanban-count {
             background: var(--bg-tertiary);
-            margin: -1rem -1rem 1rem -1rem;
-            border-bottom: 2px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
         .kanban-card {
             background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            padding: 1rem;
-            margin-bottom: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 12px;
+            cursor: grab;
             transition: all 0.2s ease;
         }
 
         .kanban-card:hover {
             border-color: var(--accent-green);
-            transform: translateX(2px);
+            transform: translateY(-2px);
         }
 
-        .applicant-count {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
+        .kanban-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .kanban-card p {
+            font-size: 13px;
             color: var(--text-secondary);
         }
 
-        .early-badge {
-            display: inline-block;
-            background: var(--accent-red);
-            color: var(--bg-primary);
-            padding: 0.25rem 0.5rem;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin-left: 0.5rem;
-        }
-
-        .filter-bar {
+        .kanban-card-meta {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
-        .filter-input {
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border);
-            color: var(--text-primary);
-            padding: 0.75rem 1rem;
-            font-family: 'Work Sans', sans-serif;
-            font-size: 0.9rem;
+        /* Settings */
+        .settings-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
         }
 
-        .filter-input:focus {
-            outline: none;
+        .settings-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-label h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .settings-label p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-secondary);
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle input:checked + .toggle-slider {
+            background-color: var(--accent-green);
             border-color: var(--accent-green);
         }
 
-        select.filter-input {
-            cursor: pointer;
+        .toggle input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+            background-color: var(--bg-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent-green);
+            color: var(--bg-primary);
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .kanban-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
-            .table-header, .table-row {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px 20px;
             }
-            
-            .tabs-container {
+
+            .nav-tabs {
+                padding: 0 20px;
                 overflow-x: auto;
             }
-            
+
+            .nav-tab {
+                padding: 12px 20px;
+                font-size: 12px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
             .kanban-board {
                 grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .jobs-table {
+                display: block;
+                overflow-x: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="app"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Sample data (in production, this comes from API)
-        const SAMPLE_JOBS = [
+        // Sample Data
+        const sampleFundingAlerts = [
             {
-                id: "hn_123456",
-                source: "HackerNews",
+                id: 1,
+                company: "Monzo",
+                amount: "£150M",
+                round: "Series G",
+                date: "2 hours ago",
+                description: "UK digital bank raises funding for US expansion",
+                logo: "M"
+            },
+            {
+                id: 2,
                 company: "Revolut",
-                title: "Backend Engineer",
-                location: "London, UK",
-                salary: "£70-90k",
-                stage: "Series C",
-                posted_at: "2h ago",
-                match_score: 95,
-                applicants: 5,
-                status: "new"
+                amount: "$500M",
+                round: "Series E",
+                date: "5 hours ago",
+                description: "Fintech unicorn valued at $33B after latest round",
+                logo: "R"
             },
             {
-                id: "hn_123457",
-                source: "HackerNews",
-                company: "Monzo",
-                title: "Financial Analyst",
-                location: "Remote",
-                salary: "£55-70k",
-                stage: "Series B",
-                posted_at: "5h ago",
-                match_score: 92,
-                applicants: 12,
-                status: "new"
-            },
-            {
-                id: "yc_789",
-                source: "Y Combinator",
-                company: "Stripe",
-                title: "Product Manager",
-                location: "London, UK",
-                salary: "£80-100k",
-                stage: "Series D",
-                posted_at: "1d ago",
-                match_score: 89,
-                applicants: 30,
-                status: "fresh"
-            },
-            {
-                id: "yc_790",
-                source: "Y Combinator",
-                company: "Vanta",
-                title: "Security Engineer",
-                location: "London, UK",
-                salary: "£70-95k",
-                stage: "Series B",
-                posted_at: "4d ago",
-                match_score: 95,
-                applicants: 80,
-                status: "saved"
-            },
-            {
-                id: "wttj_456",
-                source: "WTTJ",
+                id: 3,
                 company: "Wise",
-                title: "Data Analyst",
-                location: "Remote",
-                salary: "£60-75k",
-                stage: "Series C",
-                posted_at: "2d ago",
-                match_score: 87,
-                applicants: 45,
-                status: "fresh"
+                amount: "$200M",
+                round: "Secondary",
+                date: "1 day ago",
+                description: "Money transfer company expands to new markets",
+                logo: "W"
             },
             {
-                id: "wttj_457",
-                source: "WTTJ",
+                id: 4,
                 company: "Checkout.com",
-                title: "Software Engineer",
-                location: "London, UK",
-                salary: "£65-85k",
-                stage: "Series B",
-                posted_at: "3d ago",
-                match_score: 85,
-                applicants: 60,
-                status: "fresh"
+                amount: "$1B",
+                round: "Series D",
+                date: "2 days ago",
+                description: "Payment processing platform hits $40B valuation",
+                logo: "C"
             }
         ];
 
-        const FUNDING_ALERTS = [
+        const sampleJobs = [
             {
-                id: "f1",
-                company: "Vanta",
-                amount: "$50M",
-                round: "Series B",
-                date: "2h ago",
+                id: 1,
+                company: "Revolut",
+                logo: "R",
+                role: "Graduate Financial Analyst",
                 location: "London, UK",
-                description: "Security automation platform raises Series B",
-                jobs_posted: true,
-                jobs_count: 3
+                salary: "£45,000 - £55,000",
+                posted: "2 hours ago",
+                applicants: 12,
+                match: 95,
+                source: "WTTJ",
+                stage: "Series E",
+                isNew: true
             },
             {
-                id: "f2",
+                id: 2,
                 company: "Monzo",
-                amount: "$100M",
-                round: "Series C",
-                date: "1d ago",
+                logo: "M",
+                role: "Operations Associate",
                 location: "London, UK",
-                description: "Digital bank expands product offerings",
-                jobs_posted: false
+                salary: "£40,000 - £50,000",
+                posted: "4 hours ago",
+                applicants: 8,
+                match: 92,
+                source: "HackerNews",
+                stage: "Series G",
+                isNew: true
+            },
+            {
+                id: 3,
+                company: "Wise",
+                logo: "W",
+                role: "Junior Data Analyst",
+                location: "London, UK (Hybrid)",
+                salary: "£42,000 - £52,000",
+                posted: "6 hours ago",
+                applicants: 23,
+                match: 88,
+                source: "YC",
+                stage: "Public",
+                isNew: true
+            },
+            {
+                id: 4,
+                company: "Stripe",
+                logo: "S",
+                role: "Finance Operations Intern",
+                location: "Dublin, Ireland",
+                salary: "€45,000 - €55,000",
+                posted: "1 day ago",
+                applicants: 45,
+                match: 85,
+                source: "Adzuna",
+                stage: "Series I",
+                isNew: false
+            },
+            {
+                id: 5,
+                company: "Checkout.com",
+                logo: "C",
+                role: "Graduate Business Analyst",
+                location: "London, UK",
+                salary: "£48,000 - £58,000",
+                posted: "1 day ago",
+                applicants: 34,
+                match: 82,
+                source: "Reed",
+                stage: "Series D",
+                isNew: false
+            },
+            {
+                id: 6,
+                company: "GoCardless",
+                logo: "G",
+                role: "Operations Coordinator",
+                location: "London, UK",
+                salary: "£35,000 - £45,000",
+                posted: "2 days ago",
+                applicants: 67,
+                match: 78,
+                source: "WTTJ",
+                stage: "Series F",
+                isNew: false
             }
         ];
 
-        function App() {
-            const [activeTab, setActiveTab] = useState('news');
-            const [jobs, setJobs] = useState(SAMPLE_JOBS);
-            const [fundingAlerts, setFundingAlerts] = useState(FUNDING_ALERTS);
+        const sampleApplications = {
+            saved: [
+                { id: 1, company: "Stripe", role: "Finance Operations Intern", date: "Jan 18" }
+            ],
+            applied: [
+                { id: 2, company: "Revolut", role: "Graduate Financial Analyst", date: "Jan 17" },
+                { id: 3, company: "Monzo", role: "Operations Associate", date: "Jan 15" }
+            ],
+            interview: [
+                { id: 4, company: "Wise", role: "Junior Data Analyst", date: "Jan 20" }
+            ],
+            offer: []
+        };
 
-            const newJobsCount = jobs.filter(j => j.status === 'new').length;
-            const newFundingCount = fundingAlerts.length;
-
+        // Toast Component
+        function Toast({ message, show }) {
             return (
-                <div className="app-container">
-                    <header className="header">
-                        <div className="logo">🚀 STARTUP SCOUT</div>
-                        <div className="user-info">sarah@email.com</div>
-                    </header>
-
-                    <div className="tabs-container">
-                        <button 
-                            className={`tab ${activeTab === 'news' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('news')}
-                        >
-                            News
-                            {newFundingCount > 0 && <span className="notification-badge">{newFundingCount}</span>}
-                        </button>
-                        <button 
-                            className={`tab ${activeTab === 'jobs' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('jobs')}
-                        >
-                            Jobs
-                            {newJobsCount > 0 && <span className="notification-badge">{newJobsCount}</span>}
-                        </button>
-                        <button 
-                            className={`tab ${activeTab === 'tracking' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('tracking')}
-                        >
-                            Tracking
-                        </button>
-                        <button 
-                            className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('settings')}
-                        >
-                            Settings
-                        </button>
-                    </div>
-
-                    <div className="content">
-                        {activeTab === 'news' && <NewsTab alerts={fundingAlerts} />}
-                        {activeTab === 'jobs' && <JobsTab jobs={jobs} />}
-                        {activeTab === 'tracking' && <TrackingTab />}
-                        {activeTab === 'settings' && <SettingsTab />}
-                    </div>
+                <div className={`toast ${show ? 'show' : ''}`}>
+                    {message}
                 </div>
             );
         }
 
-        function NewsTab({ alerts }) {
+        // Header Component
+        function Header({ stats }) {
             return (
-                <div>
-                    <div className="stats-bar">
-                        <div className="stat-card">
-                            <div className="stat-number">{alerts.length}</div>
-                            <div className="stat-label">Funding Alerts</div>
+                <header className="header">
+                    <div className="logo">
+                        Startup<span>Scout</span>
+                    </div>
+                    <div className="header-stats">
+                        <div className="stat">
+                            <span className="stat-value">{stats.totalJobs}</span>
+                            <span className="stat-label">Jobs Found</span>
                         </div>
-                        <div className="stat-card">
-                            <div className="stat-number">3</div>
-                            <div className="stat-label">Companies Watched</div>
+                        <div className="stat">
+                            <span className="stat-value">{stats.newToday}</span>
+                            <span className="stat-label">New Today</span>
                         </div>
-                        <div className="stat-card">
-                            <div className="stat-number">5</div>
-                            <div className="stat-label">Jobs Posted</div>
+                        <div className="stat">
+                            <span className="stat-value">{stats.applied}</span>
+                            <span className="stat-label">Applied</span>
                         </div>
                     </div>
+                </header>
+            );
+        }
 
-                    <h2 style={{fontFamily: 'Space Mono', marginBottom: '1.5rem', color: 'var(--accent-yellow)'}}>
-                        💰 FUNDING ANNOUNCEMENTS
-                    </h2>
+        // Navigation Component
+        function Navigation({ activeTab, setActiveTab, badges }) {
+            const tabs = [
+                { id: 'news', label: 'News', badge: badges.news },
+                { id: 'jobs', label: 'Jobs', badge: badges.jobs },
+                { id: 'tracking', label: 'Tracking', badge: null },
+                { id: 'settings', label: 'Settings', badge: null }
+            ];
 
+            return (
+                <nav className="nav-tabs">
+                    {tabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+                            onClick={() => setActiveTab(tab.id)}
+                        >
+                            {tab.label}
+                            {tab.badge > 0 && <span className="tab-badge">{tab.badge}</span>}
+                        </button>
+                    ))}
+                </nav>
+            );
+        }
+
+        // News Tab Component
+        function NewsTab({ alerts, onWatch }) {
+            return (
+                <div className="tab-content active">
+                    <div className="section-header">
+                        <h2 className="section-title">💰 Funding Alerts</h2>
+                        <button className="btn btn-secondary btn-small">Refresh</button>
+                    </div>
+                    
                     {alerts.map(alert => (
-                        <div key={alert.id} className="funding-card">
-                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem'}}>
+                        <div key={alert.id} className="card">
+                            <div className="card-header">
                                 <div>
-                                    <div className="funding-amount">{alert.company} raises {alert.amount}</div>
-                                    <div style={{color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
-                                        {alert.round} • {alert.location} • {alert.date}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div className="company-logo">{alert.logo}</div>
+                                        <div>
+                                            <h3 className="card-title">{alert.company}</h3>
+                                            <div className="card-subtitle">{alert.amount} • {alert.round}</div>
+                                        </div>
                                     </div>
                                 </div>
-                                {alert.jobs_posted && (
-                                    <div className="status-badge status-new">
-                                        {alert.jobs_count} JOBS POSTED!
-                                    </div>
-                                )}
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    <span className="card-badge badge-funding">FUNDING</span>
+                                    <button 
+                                        className="btn btn-primary btn-small"
+                                        onClick={() => onWatch(alert.company)}
+                                    >
+                                        Watch
+                                    </button>
+                                </div>
                             </div>
-                            <p style={{color: 'var(--text-secondary)', marginBottom: '1rem'}}>{alert.description}</p>
-                            <div style={{display: 'flex', gap: '1rem'}}>
-                                {alert.jobs_posted ? (
-                                    <button className="btn btn-primary">View Jobs →</button>
-                                ) : (
-                                    <button className="btn">👀 Watch Company</button>
-                                )}
-                                <button className="btn">Visit Website</button>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{alert.description}</p>
+                            <div className="card-meta">
+                                <span>🕐 {alert.date}</span>
+                                <span>📈 Expect hiring in 2-4 weeks</span>
                             </div>
                         </div>
                     ))}
@@ -630,82 +900,170 @@
             );
         }
 
-        function JobsTab({ jobs }) {
+        // Jobs Tab Component
+        function JobsTab({ jobs, filters, setFilters, onApply, onSave }) {
+            const getMatchClass = (score) => {
+                if (score >= 85) return 'match-high';
+                if (score >= 70) return 'match-medium';
+                return 'match-low';
+            };
+
+            const getApplicantsClass = (count) => {
+                if (count <= 20) return 'applicants-low';
+                if (count <= 50) return 'applicants-medium';
+                return 'applicants-high';
+            };
+
             return (
-                <div>
-                    <div className="stats-bar">
-                        <div className="stat-card">
-                            <div className="stat-number">{jobs.length}</div>
-                            <div className="stat-label">Total Jobs</div>
-                        </div>
-                        <div className="stat-card">
-                            <div className="stat-number">{jobs.filter(j => j.status === 'new').length}</div>
-                            <div className="stat-label">New Today</div>
-                        </div>
-                        <div className="stat-card">
-                            <div className="stat-number">{jobs.filter(j => j.match_score >= 90).length}</div>
-                            <div className="stat-label">95%+ Match</div>
-                        </div>
+                <div className="tab-content active">
+                    <div className="section-header">
+                        <h2 className="section-title">📊 Job Listings</h2>
+                        <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                            {jobs.length} jobs found
+                        </span>
                     </div>
 
-                    <div className="filter-bar">
-                        <input type="text" className="filter-input" placeholder="🔍 Search jobs..." style={{flex: 1}} />
-                        <select className="filter-input">
-                            <option>All Sources</option>
-                            <option>HackerNews</option>
-                            <option>Y Combinator</option>
-                            <option>WTTJ</option>
+                    <div className="filters">
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="🔍 Search jobs, companies..."
+                            value={filters.search}
+                            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                        />
+                        <select 
+                            className="filter-select"
+                            value={filters.source}
+                            onChange={(e) => setFilters({ ...filters, source: e.target.value })}
+                        >
+                            <option value="all">All Sources</option>
+                            <option value="WTTJ">Welcome to the Jungle</option>
+                            <option value="HackerNews">HackerNews</option>
+                            <option value="YC">Y Combinator</option>
+                            <option value="Adzuna">Adzuna</option>
+                            <option value="Reed">Reed</option>
                         </select>
-                        <select className="filter-input">
-                            <option>All Stages</option>
-                            <option>Seed</option>
-                            <option>Series A</option>
-                            <option>Series B</option>
-                            <option>Series C+</option>
-                        </select>
-                        <select className="filter-input">
-                            <option>All Locations</option>
-                            <option>London</option>
-                            <option>Remote</option>
+                        <select 
+                            className="filter-select"
+                            value={filters.stage}
+                            onChange={(e) => setFilters({ ...filters, stage: e.target.value })}
+                        >
+                            <option value="all">All Stages</option>
+                            <option value="Seed">Seed</option>
+                            <option value="Series A">Series A</option>
+                            <option value="Series B">Series B</option>
+                            <option value="Series C+">Series C+</option>
                         </select>
                     </div>
 
-                    <div className="jobs-table">
-                        <div className="table-header">
-                            <div>Match</div>
-                            <div>Company</div>
-                            <div>Role</div>
-                            <div>Salary</div>
-                            <div>Location</div>
-                            <div>Posted</div>
-                            <div>Action</div>
-                        </div>
+                    <table className="jobs-table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Role</th>
+                                <th>Location</th>
+                                <th>Salary</th>
+                                <th>Match</th>
+                                <th>Applicants</th>
+                                <th>Posted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {jobs.map(job => (
+                                <tr key={job.id}>
+                                    <td>
+                                        <div className="company-cell">
+                                            <div className="company-logo">{job.logo}</div>
+                                            <div className="company-info">
+                                                <h4>{job.company}</h4>
+                                                <span>{job.stage}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            {job.role}
+                                            {job.isNew && <span className="card-badge badge-new">NEW</span>}
+                                        </div>
+                                    </td>
+                                    <td>{job.location}</td>
+                                    <td>{job.salary}</td>
+                                    <td>
+                                        <span className={`match-score ${getMatchClass(job.match)}`}>
+                                            {job.match}%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span className={`applicants ${getApplicantsClass(job.applicants)}`}>
+                                            {job.applicants}
+                                            {job.applicants <= 15 && <span style={{ marginLeft: '4px' }}>🔥</span>}
+                                        </span>
+                                    </td>
+                                    <td style={{ color: 'var(--text-secondary)' }}>{job.posted}</td>
+                                    <td>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button 
+                                                className="btn btn-primary btn-small"
+                                                onClick={() => onApply(job)}
+                                            >
+                                                Apply
+                                            </button>
+                                            <button 
+                                                className="btn btn-secondary btn-small"
+                                                onClick={() => onSave(job)}
+                                            >
+                                                Save
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
 
-                        {jobs.map(job => (
-                            <div key={job.id} className="table-row">
-                                <div className="match-score">{job.match_score}</div>
-                                <div>
-                                    <div className="company-name">{job.company}</div>
-                                    <div className="company-stage">{job.stage}</div>
+        // Tracking Tab Component
+        function TrackingTab({ applications }) {
+            const columns = [
+                { id: 'saved', title: 'Saved', icon: '💾' },
+                { id: 'applied', title: 'Applied', icon: '📤' },
+                { id: 'interview', title: 'Interview', icon: '💬' },
+                { id: 'offer', title: 'Offer', icon: '🎉' }
+            ];
+
+            return (
+                <div className="tab-content active">
+                    <div className="section-header">
+                        <h2 className="section-title">📝 Application Tracking</h2>
+                        <button className="btn btn-secondary btn-small">Export</button>
+                    </div>
+
+                    <div className="kanban-board">
+                        {columns.map(column => (
+                            <div key={column.id} className="kanban-column">
+                                <div className="kanban-header">
+                                    <span className="kanban-title">{column.icon} {column.title}</span>
+                                    <span className="kanban-count">{applications[column.id]?.length || 0}</span>
                                 </div>
-                                <div>
-                                    <div className="job-title">{job.title}</div>
-                                    <div className="job-meta">
-                                        {job.source} 
-                                        <span className="applicant-count"> • {job.applicants} applicants</span>
-                                        {job.applicants < 15 && <span className="early-badge">EARLY!</span>}
+                                
+                                {applications[column.id]?.length > 0 ? (
+                                    applications[column.id].map(app => (
+                                        <div key={app.id} className="kanban-card">
+                                            <h4>{app.role}</h4>
+                                            <p>{app.company}</p>
+                                            <div className="kanban-card-meta">
+                                                <span>{app.date}</span>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="empty-state" style={{ padding: '30px 10px' }}>
+                                        <p style={{ fontSize: '13px' }}>No applications yet</p>
                                     </div>
-                                </div>
-                                <div style={{color: 'var(--text-secondary)'}}>{job.salary}</div>
-                                <div style={{color: 'var(--text-secondary)'}}>{job.location}</div>
-                                <div>
-                                    <span className={`status-badge status-${job.status}`}>{job.posted_at}</span>
-                                </div>
-                                <div>
-                                    <button className="btn btn-primary" style={{fontSize: '0.7rem', padding: '0.4rem 0.8rem'}}>
-                                        APPLY
-                                    </button>
-                                </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -713,177 +1071,100 @@
             );
         }
 
-        function TrackingTab() {
-            const applications = [
-                { company: 'Vanta', role: 'Security Engineer', status: 'Offer', stage: 4 },
-                { company: 'Stripe', role: 'Product Manager', status: 'Interview', stage: 3 },
-                { company: 'Monzo', role: 'Financial Analyst', status: 'Screening', stage: 2 },
-                { company: 'Revolut', role: 'Backend Engineer', status: 'Applied', stage: 1 },
-            ];
-
+        // Settings Tab Component
+        function SettingsTab({ settings, setSettings }) {
             return (
-                <div>
-                    <div className="stats-bar">
-                        <div className="stat-card">
-                            <div className="stat-number">12</div>
-                            <div className="stat-label">Total Apps</div>
+                <div className="tab-content active">
+                    <div className="section-header">
+                        <h2 className="section-title">⚙️ Settings</h2>
+                    </div>
+
+                    <div className="settings-section">
+                        <h3 className="settings-title">Job Preferences</h3>
+                        
+                        <div className="settings-row">
+                            <div className="settings-label">
+                                <h4>Minimum Match Score</h4>
+                                <p>Only show jobs with this match score or higher</p>
+                            </div>
+                            <select 
+                                className="filter-select"
+                                value={settings.minMatch}
+                                onChange={(e) => setSettings({ ...settings, minMatch: e.target.value })}
+                            >
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                            </select>
                         </div>
-                        <div className="stat-card">
-                            <div className="stat-number">5</div>
-                            <div className="stat-label">Active</div>
+
+                        <div className="settings-row">
+                            <div className="settings-label">
+                                <h4>Hide High Competition Jobs</h4>
+                                <p>Don't show jobs with 50+ applicants</p>
+                            </div>
+                            <label className="toggle">
+                                <input 
+                                    type="checkbox" 
+                                    checked={settings.hideHighCompetition}
+                                    onChange={(e) => setSettings({ ...settings, hideHighCompetition: e.target.checked })}
+                                />
+                                <span className="toggle-slider"></span>
+                            </label>
                         </div>
-                        <div className="stat-card">
-                            <div className="stat-number">1</div>
-                            <div className="stat-label">Offers</div>
+
+                        <div className="settings-row">
+                            <div className="settings-label">
+                                <h4>Remote Only</h4>
+                                <p>Only show remote or hybrid positions</p>
+                            </div>
+                            <label className="toggle">
+                                <input 
+                                    type="checkbox"
+                                    checked={settings.remoteOnly}
+                                    onChange={(e) => setSettings({ ...settings, remoteOnly: e.target.checked })}
+                                />
+                                <span className="toggle-slider"></span>
+                            </label>
                         </div>
                     </div>
 
-                    <h2 style={{fontFamily: 'Space Mono', marginBottom: '1.5rem'}}>
-                        APPLICATION PIPELINE
-                    </h2>
-
-                    <div className="kanban-board">
-                        <div className="kanban-column">
-                            <div className="kanban-header">Applied (4)</div>
-                            {applications.filter(a => a.stage === 1).map(app => (
-                                <div key={app.company} className="kanban-card">
-                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>{app.company}</div>
-                                    <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{app.role}</div>
-                                    <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
-                                        2 days ago
-                                    </div>
+                    <div className="settings-section">
+                        <h3 className="settings-title">Data Sources</h3>
+                        
+                        {['HackerNews', 'Y Combinator', 'Welcome to the Jungle', 'Adzuna', 'Reed', 'GitHub Trending'].map(source => (
+                            <div key={source} className="settings-row">
+                                <div className="settings-label">
+                                    <h4>{source}</h4>
+                                    <p>Include jobs from {source}</p>
                                 </div>
-                            ))}
-                        </div>
-
-                        <div className="kanban-column">
-                            <div className="kanban-header">Screening (2)</div>
-                            {applications.filter(a => a.stage === 2).map(app => (
-                                <div key={app.company} className="kanban-card">
-                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>{app.company}</div>
-                                    <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{app.role}</div>
-                                    <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
-                                        1 week ago
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="kanban-column">
-                            <div className="kanban-header">Interview (1)</div>
-                            {applications.filter(a => a.stage === 3).map(app => (
-                                <div key={app.company} className="kanban-card">
-                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>{app.company}</div>
-                                    <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{app.role}</div>
-                                    <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
-                                        2 weeks ago
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="kanban-column" style={{borderColor: 'var(--accent-green)'}}>
-                            <div className="kanban-header" style={{backgroundColor: 'var(--accent-green)', color: 'var(--bg-primary)'}}>
-                                Offer (1)
+                                <label className="toggle">
+                                    <input type="checkbox" defaultChecked />
+                                    <span className="toggle-slider"></span>
+                                </label>
                             </div>
-                            {applications.filter(a => a.stage === 4).map(app => (
-                                <div key={app.company} className="kanban-card" style={{borderColor: 'var(--accent-green)'}}>
-                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>{app.company}</div>
-                                    <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{app.role}</div>
-                                    <div style={{fontSize: '0.85rem', color: 'var(--accent-green)', marginTop: '0.5rem', fontWeight: 600}}>
-                                        £85,000
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        ))}
                     </div>
-                </div>
-            );
-        }
 
-        function SettingsTab() {
-            return (
-                <div>
-                    <h2 style={{fontFamily: 'Space Mono', marginBottom: '1.5rem'}}>
-                        PREFERENCES
-                    </h2>
-
-                    <div style={{maxWidth: '800px'}}>
-                        <div style={{background: 'var(--bg-secondary)', border: '2px solid var(--border)', padding: '1.5rem', marginBottom: '1.5rem'}}>
-                            <h3 style={{marginBottom: '1rem', fontFamily: 'Space Mono', fontSize: '0.9rem'}}>JOB PREFERENCES</h3>
-                            
-                            <div style={{marginBottom: '1rem'}}>
-                                <label style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
-                                    ROLES
-                                </label>
-                                <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
-                                    <span className="status-badge status-saved">Financial Analyst</span>
-                                    <span className="status-badge status-saved">Data Analyst</span>
-                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.25rem 0.5rem'}}>+ Add</button>
-                                </div>
+                    <div className="settings-section">
+                        <h3 className="settings-title">Account</h3>
+                        
+                        <div className="settings-row">
+                            <div className="settings-label">
+                                <h4>Export Data</h4>
+                                <p>Download all your saved jobs and applications</p>
                             </div>
-
-                            <div style={{marginBottom: '1rem'}}>
-                                <label style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
-                                    LOCATIONS
-                                </label>
-                                <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
-                                    <span className="status-badge status-saved">London</span>
-                                    <span className="status-badge status-saved">Remote</span>
-                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.25rem 0.5rem'}}>+ Add</button>
-                                </div>
-                            </div>
-
-                            <div style={{marginBottom: '1rem'}}>
-                                <label style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
-                                    SALARY RANGE
-                                </label>
-                                <div style={{color: 'var(--accent-green)', fontFamily: 'Space Mono', fontSize: '1.2rem', marginTop: '0.5rem'}}>
-                                    £50,000 - £100,000+
-                                </div>
-                            </div>
-
-                            <div>
-                                <label style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
-                                    COMPANY STAGE
-                                </label>
-                                <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
-                                    <span className="status-badge status-saved">Series A</span>
-                                    <span className="status-badge status-saved">Series B</span>
-                                    <span className="status-badge status-saved">Series C</span>
-                                </div>
-                            </div>
+                            <button className="btn btn-secondary btn-small">Export CSV</button>
                         </div>
 
-                        <div style={{background: 'var(--bg-secondary)', border: '2px solid var(--border)', padding: '1.5rem'}}>
-                            <h3 style={{marginBottom: '1rem', fontFamily: 'Space Mono', fontSize: '0.9rem'}}>WATCHED COMPANIES (3)</h3>
-                            
-                            <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', background: 'var(--bg-tertiary)'}}>
-                                    <div>
-                                        <div style={{fontWeight: 600}}>Vanta</div>
-                                        <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>3 new jobs posted!</div>
-                                    </div>
-                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.4rem 0.8rem'}}>View</button>
-                                </div>
-                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', background: 'var(--bg-tertiary)'}}>
-                                    <div>
-                                        <div style={{fontWeight: 600}}>Monzo</div>
-                                        <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>Monitoring for jobs</div>
-                                    </div>
-                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.4rem 0.8rem'}}>Remove</button>
-                                </div>
-                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', background: 'var(--bg-tertiary)'}}>
-                                    <div>
-                                        <div style={{fontWeight: 600}}>Stripe</div>
-                                        <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>Monitoring for jobs</div>
-                                    </div>
-                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.4rem 0.8rem'}}>Remove</button>
-                                </div>
+                        <div className="settings-row">
+                            <div className="settings-label">
+                                <h4>Clear All Data</h4>
+                                <p>Remove all saved jobs and tracking data</p>
                             </div>
-
-                            <button className="btn btn-primary" style={{marginTop: '1rem', width: '100%'}}>
-                                + Add Company to Watchlist
+                            <button className="btn btn-secondary btn-small" style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}>
+                                Clear Data
                             </button>
                         </div>
                     </div>
@@ -891,7 +1172,102 @@
             );
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        // Main App Component
+        function App() {
+            const [activeTab, setActiveTab] = useState('news');
+            const [toast, setToast] = useState({ show: false, message: '' });
+            const [filters, setFilters] = useState({ search: '', source: 'all', stage: 'all' });
+            const [settings, setSettings] = useState({
+                minMatch: '60',
+                hideHighCompetition: false,
+                remoteOnly: false
+            });
+            const [applications, setApplications] = useState(sampleApplications);
+
+            const showToast = (message) => {
+                setToast({ show: true, message });
+                setTimeout(() => setToast({ show: false, message: '' }), 3000);
+            };
+
+            const handleWatch = (company) => {
+                showToast(`✓ Now watching ${company}`);
+            };
+
+            const handleApply = (job) => {
+                showToast(`✓ Opening ${job.company} application...`);
+                // Add to applied
+                setApplications(prev => ({
+                    ...prev,
+                    applied: [...prev.applied, { id: Date.now(), company: job.company, role: job.role, date: 'Today' }]
+                }));
+            };
+
+            const handleSave = (job) => {
+                showToast(`✓ Saved ${job.role} at ${job.company}`);
+                // Add to saved
+                setApplications(prev => ({
+                    ...prev,
+                    saved: [...prev.saved, { id: Date.now(), company: job.company, role: job.role, date: 'Today' }]
+                }));
+            };
+
+            // Filter jobs
+            const filteredJobs = sampleJobs.filter(job => {
+                if (filters.search && !job.role.toLowerCase().includes(filters.search.toLowerCase()) && 
+                    !job.company.toLowerCase().includes(filters.search.toLowerCase())) {
+                    return false;
+                }
+                if (filters.source !== 'all' && job.source !== filters.source) {
+                    return false;
+                }
+                return true;
+            });
+
+            const stats = {
+                totalJobs: sampleJobs.length,
+                newToday: sampleJobs.filter(j => j.isNew).length,
+                applied: applications.applied.length
+            };
+
+            const badges = {
+                news: sampleFundingAlerts.length,
+                jobs: sampleJobs.filter(j => j.isNew).length
+            };
+
+            return (
+                <div>
+                    <Header stats={stats} />
+                    <Navigation activeTab={activeTab} setActiveTab={setActiveTab} badges={badges} />
+                    
+                    <main className="main-content">
+                        {activeTab === 'news' && (
+                            <NewsTab alerts={sampleFundingAlerts} onWatch={handleWatch} />
+                        )}
+                        {activeTab === 'jobs' && (
+                            <JobsTab 
+                                jobs={filteredJobs} 
+                                filters={filters} 
+                                setFilters={setFilters}
+                                onApply={handleApply}
+                                onSave={handleSave}
+                            />
+                        )}
+                        {activeTab === 'tracking' && (
+                            <TrackingTab applications={applications} />
+                        )}
+                        {activeTab === 'settings' && (
+                            <SettingsTab settings={settings} setSettings={setSettings} />
+                        )}
+                    </main>
+
+                    <Toast message={toast.message} show={toast.show} />
+                </div>
+            );
+        }
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('app'));
+        root.render(<App />);
     </script>
 </body>
 </html>
