@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Scout - Find Your Dream Startup Job</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Brutalist color scheme - high contrast, bold */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --accent-green: #00ff41;
+            --accent-yellow: #ffff00;
+            --accent-red: #ff0040;
+            --text-primary: #ffffff;
+            --text-secondary: #999999;
+            --border: #333333;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--accent-green);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            letter-spacing: -1px;
+        }
+
+        .user-info {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 0;
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--border);
+            padding: 0 2rem;
+        }
+
+        .tab {
+            font-family: 'Space Mono', monospace;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .tab.active {
+            color: var(--accent-green);
+            background: var(--bg-primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-green);
+        }
+
+        .notification-badge {
+            display: inline-block;
+            background: var(--accent-red);
+            color: var(--bg-primary);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            line-height: 20px;
+            text-align: center;
+            margin-left: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+        }
+
+        .jobs-table {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 60px 1fr 2fr 120px 100px 100px 100px;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-bottom: 2px solid var(--border);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 2fr 120px 100px 100px 100px;
+            gap: 1rem;
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.2s ease;
+            align-items: center;
+        }
+
+        .table-row:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .match-score {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .company-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .company-stage {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .job-title {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .job-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid;
+        }
+
+        .status-new {
+            color: var(--accent-red);
+            border-color: var(--accent-red);
+            background: rgba(255, 0, 64, 0.1);
+        }
+
+        .status-fresh {
+            color: var(--accent-yellow);
+            border-color: var(--accent-yellow);
+            background: rgba(255, 255, 0, 0.1);
+        }
+
+        .status-saved {
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        .btn {
+            font-family: 'Space Mono', monospace;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--accent-green);
+            background: transparent;
+            color: var(--accent-green);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--accent-green);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary {
+            background: var(--accent-green);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--accent-green);
+        }
+
+        .funding-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-yellow);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .funding-card::before {
+            content: '💰';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+
+        .funding-amount {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .kanban-column {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 1rem;
+        }
+
+        .kanban-header {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            margin: -1rem -1rem 1rem -1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .kanban-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .kanban-card:hover {
+            border-color: var(--accent-green);
+            transform: translateX(2px);
+        }
+
+        .applicant-count {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .early-badge {
+            display: inline-block;
+            background: var(--accent-red);
+            color: var(--bg-primary);
+            padding: 0.25rem 0.5rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+
+        select.filter-input {
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .table-header, .table-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .tabs-container {
+                overflow-x: auto;
+            }
+            
+            .kanban-board {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Sample data (in production, this comes from API)
+        const SAMPLE_JOBS = [
+            {
+                id: "hn_123456",
+                source: "HackerNews",
+                company: "Revolut",
+                title: "Backend Engineer",
+                location: "London, UK",
+                salary: "£70-90k",
+                stage: "Series C",
+                posted_at: "2h ago",
+                match_score: 95,
+                applicants: 5,
+                status: "new"
+            },
+            {
+                id: "hn_123457",
+                source: "HackerNews",
+                company: "Monzo",
+                title: "Financial Analyst",
+                location: "Remote",
+                salary: "£55-70k",
+                stage: "Series B",
+                posted_at: "5h ago",
+                match_score: 92,
+                applicants: 12,
+                status: "new"
+            },
+            {
+                id: "yc_789",
+                source: "Y Combinator",
+                company: "Stripe",
+                title: "Product Manager",
+                location: "London, UK",
+                salary: "£80-100k",
+                stage: "Series D",
+                posted_at: "1d ago",
+                match_score: 89,
+                applicants: 30,
+                status: "fresh"
+            },
+            {
+                id: "yc_790",
+                source: "Y Combinator",
+                company: "Vanta",
+                title: "Security Engineer",
+                location: "London, UK",
+                salary: "£70-95k",
+                stage: "Series B",
+                posted_at: "4d ago",
+                match_score: 95,
+                applicants: 80,
+                status: "saved"
+            },
+            {
+                id: "wttj_456",
+                source: "WTTJ",
+                company: "Wise",
+                title: "Data Analyst",
+                location: "Remote",
+                salary: "£60-75k",
+                stage: "Series C",
+                posted_at: "2d ago",
+                match_score: 87,
+                applicants: 45,
+                status: "fresh"
+            },
+            {
+                id: "wttj_457",
+                source: "WTTJ",
+                company: "Checkout.com",
+                title: "Software Engineer",
+                location: "London, UK",
+                salary: "£65-85k",
+                stage: "Series B",
+                posted_at: "3d ago",
+                match_score: 85,
+                applicants: 60,
+                status: "fresh"
+            }
+        ];
+
+        const FUNDING_ALERTS = [
+            {
+                id: "f1",
+                company: "Vanta",
+                amount: "$50M",
+                round: "Series B",
+                date: "2h ago",
+                location: "London, UK",
+                description: "Security automation platform raises Series B",
+                jobs_posted: true,
+                jobs_count: 3
+            },
+            {
+                id: "f2",
+                company: "Monzo",
+                amount: "$100M",
+                round: "Series C",
+                date: "1d ago",
+                location: "London, UK",
+                description: "Digital bank expands product offerings",
+                jobs_posted: false
+            }
+        ];
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('news');
+            const [jobs, setJobs] = useState(SAMPLE_JOBS);
+            const [fundingAlerts, setFundingAlerts] = useState(FUNDING_ALERTS);
+
+            const newJobsCount = jobs.filter(j => j.status === 'new').length;
+            const newFundingCount = fundingAlerts.length;
+
+            return (
+                <div className="app-container">
+                    <header className="header">
+                        <div className="logo">🚀 STARTUP SCOUT</div>
+                        <div className="user-info">sarah@email.com</div>
+                    </header>
+
+                    <div className="tabs-container">
+                        <button 
+                            className={`tab ${activeTab === 'news' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('news')}
+                        >
+                            News
+                            {newFundingCount > 0 && <span className="notification-badge">{newFundingCount}</span>}
+                        </button>
+                        <button 
+                            className={`tab ${activeTab === 'jobs' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('jobs')}
+                        >
+                            Jobs
+                            {newJobsCount > 0 && <span className="notification-badge">{newJobsCount}</span>}
+                        </button>
+                        <button 
+                            className={`tab ${activeTab === 'tracking' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('tracking')}
+                        >
+                            Tracking
+                        </button>
+                        <button 
+                            className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('settings')}
+                        >
+                            Settings
+                        </button>
+                    </div>
+
+                    <div className="content">
+                        {activeTab === 'news' && <NewsTab alerts={fundingAlerts} />}
+                        {activeTab === 'jobs' && <JobsTab jobs={jobs} />}
+                        {activeTab === 'tracking' && <TrackingTab />}
+                        {activeTab === 'settings' && <SettingsTab />}
+                    </div>
+                </div>
+            );
+        }
+
+        function NewsTab({ alerts }) {
+            return (
+                <div>
+                    <div className="stats-bar">
+                        <div className="stat-card">
+                            <div className="stat-number">{alerts.length}</div>
+                            <div className="stat-label">Funding Alerts</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-number">3</div>
+                            <div className="stat-label">Companies Watched</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-number">5</div>
+                            <div className="stat-label">Jobs Posted</div>
+                        </div>
+                    </div>
+
+                    <h2 style={{fontFamily: 'Space Mono', marginBottom: '1.5rem', color: 'var(--accent-yellow)'}}>
+                        💰 FUNDING ANNOUNCEMENTS
+                    </h2>
+
+                    {alerts.map(alert => (
+                        <div key={alert.id} className="funding-card">
+                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem'}}>
+                                <div>
+                                    <div className="funding-amount">{alert.company} raises {alert.amount}</div>
+                                    <div style={{color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
+                                        {alert.round} • {alert.location} • {alert.date}
+                                    </div>
+                                </div>
+                                {alert.jobs_posted && (
+                                    <div className="status-badge status-new">
+                                        {alert.jobs_count} JOBS POSTED!
+                                    </div>
+                                )}
+                            </div>
+                            <p style={{color: 'var(--text-secondary)', marginBottom: '1rem'}}>{alert.description}</p>
+                            <div style={{display: 'flex', gap: '1rem'}}>
+                                {alert.jobs_posted ? (
+                                    <button className="btn btn-primary">View Jobs →</button>
+                                ) : (
+                                    <button className="btn">👀 Watch Company</button>
+                                )}
+                                <button className="btn">Visit Website</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        function JobsTab({ jobs }) {
+            return (
+                <div>
+                    <div className="stats-bar">
+                        <div className="stat-card">
+                            <div className="stat-number">{jobs.length}</div>
+                            <div className="stat-label">Total Jobs</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-number">{jobs.filter(j => j.status === 'new').length}</div>
+                            <div className="stat-label">New Today</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-number">{jobs.filter(j => j.match_score >= 90).length}</div>
+                            <div className="stat-label">95%+ Match</div>
+                        </div>
+                    </div>
+
+                    <div className="filter-bar">
+                        <input type="text" className="filter-input" placeholder="🔍 Search jobs..." style={{flex: 1}} />
+                        <select className="filter-input">
+                            <option>All Sources</option>
+                            <option>HackerNews</option>
+                            <option>Y Combinator</option>
+                            <option>WTTJ</option>
+                        </select>
+                        <select className="filter-input">
+                            <option>All Stages</option>
+                            <option>Seed</option>
+                            <option>Series A</option>
+                            <option>Series B</option>
+                            <option>Series C+</option>
+                        </select>
+                        <select className="filter-input">
+                            <option>All Locations</option>
+                            <option>London</option>
+                            <option>Remote</option>
+                        </select>
+                    </div>
+
+                    <div className="jobs-table">
+                        <div className="table-header">
+                            <div>Match</div>
+                            <div>Company</div>
+                            <div>Role</div>
+                            <div>Salary</div>
+                            <div>Location</div>
+                            <div>Posted</div>
+                            <div>Action</div>
+                        </div>
+
+                        {jobs.map(job => (
+                            <div key={job.id} className="table-row">
+                                <div className="match-score">{job.match_score}</div>
+                                <div>
+                                    <div className="company-name">{job.company}</div>
+                                    <div className="company-stage">{job.stage}</div>
+                                </div>
+                                <div>
+                                    <div className="job-title">{job.title}</div>
+                                    <div className="job-meta">
+                                        {job.source} 
+                                        <span className="applicant-count"> • {job.applicants} applicants</span>
+                                        {job.applicants < 15 && <span className="early-badge">EARLY!</span>}
+                                    </div>
+                                </div>
+                                <div style={{color: 'var(--text-secondary)'}}>{job.salary}</div>
+                                <div style={{color: 'var(--text-secondary)'}}>{job.location}</div>
+                                <div>
+                                    <span className={`status-badge status-${job.status}`}>{job.posted_at}</span>
+                                </div>
+                                <div>
+                                    <button className="btn btn-primary" style={{fontSize: '0.7rem', padding: '0.4rem 0.8rem'}}>
+                                        APPLY
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function TrackingTab() {
+            const applications = [
+                { company: 'Vanta', role: 'Security Engineer', status: 'Offer', stage: 4 },
+                { company: 'Stripe', role: 'Product Manager', status: 'Interview', stage: 3 },
+                { company: 'Monzo', role: 'Financial Analyst', status: 'Screening', stage: 2 },
+                { company: 'Revolut', role: 'Backend Engineer', status: 'Applied', stage: 1 },
+            ];
+
+            return (
+                <div>
+                    <div className="stats-bar">
+                        <div className="stat-card">
+                            <div className="stat-number">12</div>
+                            <div className="stat-label">Total Apps</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-number">5</div>
+                            <div className="stat-label">Active</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-number">1</div>
+                            <div className="stat-label">Offers</div>
+                        </div>
+                    </div>
+
+                    <h2 style={{fontFamily: 'Space Mono', marginBottom: '1.5rem'}}>
+                        APPLICATION PIPELINE
+                    </h2>
+
+                    <div className="kanban-board">
+                        <div className="kanban-column">
+                            <div className="kanban-header">Applied (4)</div>
+                            {applications.filter(a => a.stage === 1).map(app => (
+                                <div key={app.company} className="kanban-card">
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>{app.company}</div>
+                                    <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{app.role}</div>
+                                    <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
+                                        2 days ago
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="kanban-column">
+                            <div className="kanban-header">Screening (2)</div>
+                            {applications.filter(a => a.stage === 2).map(app => (
+                                <div key={app.company} className="kanban-card">
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>{app.company}</div>
+                                    <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{app.role}</div>
+                                    <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
+                                        1 week ago
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="kanban-column">
+                            <div className="kanban-header">Interview (1)</div>
+                            {applications.filter(a => a.stage === 3).map(app => (
+                                <div key={app.company} className="kanban-card">
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>{app.company}</div>
+                                    <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{app.role}</div>
+                                    <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
+                                        2 weeks ago
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="kanban-column" style={{borderColor: 'var(--accent-green)'}}>
+                            <div className="kanban-header" style={{backgroundColor: 'var(--accent-green)', color: 'var(--bg-primary)'}}>
+                                Offer (1)
+                            </div>
+                            {applications.filter(a => a.stage === 4).map(app => (
+                                <div key={app.company} className="kanban-card" style={{borderColor: 'var(--accent-green)'}}>
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>{app.company}</div>
+                                    <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{app.role}</div>
+                                    <div style={{fontSize: '0.85rem', color: 'var(--accent-green)', marginTop: '0.5rem', fontWeight: 600}}>
+                                        £85,000
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function SettingsTab() {
+            return (
+                <div>
+                    <h2 style={{fontFamily: 'Space Mono', marginBottom: '1.5rem'}}>
+                        PREFERENCES
+                    </h2>
+
+                    <div style={{maxWidth: '800px'}}>
+                        <div style={{background: 'var(--bg-secondary)', border: '2px solid var(--border)', padding: '1.5rem', marginBottom: '1.5rem'}}>
+                            <h3 style={{marginBottom: '1rem', fontFamily: 'Space Mono', fontSize: '0.9rem'}}>JOB PREFERENCES</h3>
+                            
+                            <div style={{marginBottom: '1rem'}}>
+                                <label style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
+                                    ROLES
+                                </label>
+                                <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
+                                    <span className="status-badge status-saved">Financial Analyst</span>
+                                    <span className="status-badge status-saved">Data Analyst</span>
+                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.25rem 0.5rem'}}>+ Add</button>
+                                </div>
+                            </div>
+
+                            <div style={{marginBottom: '1rem'}}>
+                                <label style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
+                                    LOCATIONS
+                                </label>
+                                <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
+                                    <span className="status-badge status-saved">London</span>
+                                    <span className="status-badge status-saved">Remote</span>
+                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.25rem 0.5rem'}}>+ Add</button>
+                                </div>
+                            </div>
+
+                            <div style={{marginBottom: '1rem'}}>
+                                <label style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
+                                    SALARY RANGE
+                                </label>
+                                <div style={{color: 'var(--accent-green)', fontFamily: 'Space Mono', fontSize: '1.2rem', marginTop: '0.5rem'}}>
+                                    £50,000 - £100,000+
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
+                                    COMPANY STAGE
+                                </label>
+                                <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
+                                    <span className="status-badge status-saved">Series A</span>
+                                    <span className="status-badge status-saved">Series B</span>
+                                    <span className="status-badge status-saved">Series C</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{background: 'var(--bg-secondary)', border: '2px solid var(--border)', padding: '1.5rem'}}>
+                            <h3 style={{marginBottom: '1rem', fontFamily: 'Space Mono', fontSize: '0.9rem'}}>WATCHED COMPANIES (3)</h3>
+                            
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', background: 'var(--bg-tertiary)'}}>
+                                    <div>
+                                        <div style={{fontWeight: 600}}>Vanta</div>
+                                        <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>3 new jobs posted!</div>
+                                    </div>
+                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.4rem 0.8rem'}}>View</button>
+                                </div>
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', background: 'var(--bg-tertiary)'}}>
+                                    <div>
+                                        <div style={{fontWeight: 600}}>Monzo</div>
+                                        <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>Monitoring for jobs</div>
+                                    </div>
+                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.4rem 0.8rem'}}>Remove</button>
+                                </div>
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', background: 'var(--bg-tertiary)'}}>
+                                    <div>
+                                        <div style={{fontWeight: 600}}>Stripe</div>
+                                        <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>Monitoring for jobs</div>
+                                    </div>
+                                    <button className="btn" style={{fontSize: '0.7rem', padding: '0.4rem 0.8rem'}}>Remove</button>
+                                </div>
+                            </div>
+
+                            <button className="btn btn-primary" style={{marginTop: '1rem', width: '100%'}}>
+                                + Add Company to Watchlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+name: Scrape Startup Jobs
+
+on:
+  # Run every hour
+  schedule:
+    - cron: '0 * * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          cd scrapers
+          pip install requests beautifulsoup4 python-dateutil
+      
+      - name: Run job scrapers
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_API_KEY: ${{ secrets.ADZUNA_API_KEY }}
+          REED_API_KEY: ${{ secrets.REED_API_KEY }}
+        run: |
+          cd scrapers
+          python main.py
+      
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraped-jobs
+          path: scrapers/jobs.json
+          retention-days: 7
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: scrape
+    
+    steps:
+      - name: Trigger Vercel deployment
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
